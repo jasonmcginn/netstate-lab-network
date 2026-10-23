@@ -22,7 +22,7 @@ Knocking and SPA both open a normal service for a moment. WireGuard takes a diff
 
 The knock hides a door and opens it on a signal. SPA does the same with an unforgeable signal. WireGuard removes the public door entirely and puts the room behind a tunnel. Each is stronger than the last, and each asks a little more setup. In a production build of this network, WireGuard is the one that would carry real remote access; the knock and SPA are here to show the path the idea took.
 
-**Running it for real:** on a host with WireGuard kernel support (a normal Linux box, or WSL2 with the module), this is where the lab's WireGuard checkpoint would go. `[TBD: Jason to add lab results when run on supporting hardware.]`
+**Running it for real:** on a host with WireGuard kernel support (a normal Linux box, or WSL2 with the module), this is where the lab's WireGuard checkpoint would go. Measured results will be added once the lab runs on supporting hardware.
 
 ---
 
