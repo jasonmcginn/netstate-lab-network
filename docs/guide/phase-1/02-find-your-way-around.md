@@ -138,4 +138,4 @@ Docker Desktop, WSL and Git stay installed. Uninstall them from **Windows Settin
 
 ---
 
-[Previous: step 1](01-start-the-lab.md) · [Phase 1 steps](README.md) · [Next: step 3](03-two-views.md)
+[Previous: Prove the path](01-start-the-lab.md) · [Next: Watch the traffic: two views](03-two-views.md)

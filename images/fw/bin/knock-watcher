@@ -1,0 +1,92 @@
+#!/bin/bash
+# The NetState Lab Network: knock watcher (Phase 2)
+# Recreates a legacy port-knock design: it reads the firewall's own log, and when one
+# address sends the knock sequence in order, inside the window, it opens SSH and
+# RDP for that address only, for a set time.
+#
+#   knock-watcher start | stop | status
+#
+# Settings: /lab/config/fw/knock.conf   Its log: /captures/knock.log
+CONF=/lab/config/fw/knock.conf
+LOG=/captures/knock.log
+FWLOG=/captures/fw.log
+PIDFILE=/run/knock-watcher.pid
+
+say() { echo "$(date '+%H:%M:%S') $*" | tee -a "$LOG"; }
+
+load() {
+  # shellcheck disable=SC1090
+  . "$CONF"
+  read -r -a SEQ <<< "$KNOCK_SEQUENCE"
+  PORTS=$(echo "$KNOCK_SEQUENCE" | tr ' ' '\n' | sort -u | paste -sd, -)
+}
+
+idle_timer() {
+  # Sessions through the door drop after IDLE_DROP seconds of silence.
+  nfct delete timeout knock-idle 2>/dev/null
+  iptables -t raw -D PREROUTING -i lan -p tcp -m multiport --dports "$DOOR_PORTS" -j CT --timeout knock-idle 2>/dev/null
+  if [ "$1" = on ]; then
+    nfct add timeout knock-idle inet tcp established "$IDLE_DROP"
+    iptables -t raw -A PREROUTING -i lan -p tcp -m multiport --dports "$DOOR_PORTS" -j CT --timeout knock-idle
+  fi
+}
+
+door() { # open|close ip
+  local rule=(-s "$2" -i lan -o dmz -p tcp -m multiport --dports "$DOOR_PORTS" -m conntrack --ctstate NEW -m comment --comment "knock door" -j ACCEPT)
+  if [ "$1" = open ]; then
+    iptables -C FORWARD "${rule[@]}" 2>/dev/null || iptables -I FORWARD 3 "${rule[@]}"
+  else
+    iptables -D FORWARD "${rule[@]}" 2>/dev/null
+  fi
+}
+
+watch() {
+  load
+  idle_timer on
+  say "watcher started: sequence $KNOCK_SEQUENCE, flags $KNOCK_FLAGS, window ${KNOCK_WINDOW}s, door ${DOOR_OPEN}s, idle ${IDLE_DROP}s"
+  declare -A step started
+  tail -n0 -F "$FWLOG" 2>/dev/null | while read -r line; do
+    case "$line" in *FW-KNOCK*) ;; *) continue ;; esac
+    src=$(grep -o 'SRC=[0-9.]*' <<< "$line" | cut -d= -f2)
+    dpt=$(grep -o 'DPT=[0-9]*' <<< "$line" | cut -d= -f2)
+    now=$(date +%s)
+    n=${step[$src]:-0}
+    if [ "$n" -gt 0 ] && [ $((now - ${started[$src]})) -gt "$KNOCK_WINDOW" ]; then
+      say "$src: too slow (over ${KNOCK_WINDOW}s), starting again"; n=0
+    fi
+    if [ "$dpt" = "${SEQ[$n]}" ]; then
+      [ "$n" -eq 0 ] && started[$src]=$now
+      n=$((n + 1))
+      say "$src: knock $n of ${#SEQ[@]} (port $dpt)"
+    elif [ "$dpt" = "${SEQ[0]}" ]; then
+      started[$src]=$now; n=1
+      say "$src: out of order, starting again: knock 1 of ${#SEQ[@]} (port $dpt)"
+    else
+      say "$src: wrong port $dpt, starting again"; n=0
+    fi
+    if [ "$n" -eq "${#SEQ[@]}" ]; then
+      door open "$src"
+      say "$src: DOOR OPEN to ports $DOOR_PORTS for ${DOOR_OPEN}s"
+      ( sleep "$DOOR_OPEN"; door close "$src"; say "$src: door closed (sessions already open stay up)" ) &
+      n=0
+    fi
+    step[$src]=$n
+  done
+}
+
+case "$1" in
+  start)
+    if [ -f "$PIDFILE" ] && kill -0 "$(cat "$PIDFILE")" 2>/dev/null; then echo "already running"; exit 0; fi
+    setsid "$0" run >/dev/null 2>&1 < /dev/null &
+    echo $! > "$PIDFILE"; sleep 1; tail -n 1 "$LOG" ;;
+  run) watch ;;
+  stop)
+    [ -f "$PIDFILE" ] && kill -- -"$(cat "$PIDFILE")" 2>/dev/null; rm -f "$PIDFILE"
+    load; idle_timer off
+    for ip in $(iptables -S FORWARD | grep 'knock door' | grep -o '\-s [0-9.]*' | cut -d' ' -f2); do door close "$ip"; done
+    say "watcher stopped" ;;
+  status)
+    if [ -f "$PIDFILE" ] && kill -0 "$(cat "$PIDFILE")" 2>/dev/null; then echo "running"; else echo "stopped"; fi
+    iptables -S FORWARD | grep 'knock door' || echo "no doors open" ;;
+  *) echo "usage: knock-watcher start | stop | status"; exit 2 ;;
+esac

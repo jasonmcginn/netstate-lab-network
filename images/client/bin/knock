@@ -1,0 +1,14 @@
+#!/bin/sh
+# The NetState Lab Network: knock (Phase 2)
+# Sends one invalid-flag TCP packet to each port, in order, and prints each one.
+#   knock <server> <port> [port ...]
+# Example: knock 10.10.20.10 4747 3043 3043 9034
+[ $# -lt 2 ] && { echo "usage: knock <server> <port> [port ...]"; exit 2; }
+server=$1; shift
+i=1; total=$#
+for port in "$@"; do
+  echo "knock $i of $total: TCP to $server port $port, flags FIN+PSH+URG"
+  hping3 -q -c 1 -F -P -U -p "$port" "$server" >/dev/null 2>&1
+  i=$((i + 1)); sleep 0.5
+done
+echo "done: $total packets sent"

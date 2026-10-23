@@ -105,4 +105,4 @@ The order test shows the rule every firewall follows: **first match wins**. The 
 
 ---
 
-[Previous: step 6](06-lock-it-down.md) · [Phase 1 steps](README.md) · [Next: step 8](08-the-way-around.md)
+[Previous: Lock it down](06-lock-it-down.md) · [Next: The way around](08-the-way-around.md)

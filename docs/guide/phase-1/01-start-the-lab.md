@@ -50,4 +50,4 @@ Closing fw cut the client off from the server, and opening it brought it back. S
 
 ---
 
-[Previous: step 0](00-set-up-your-pc.md) · [Phase 1 steps](README.md) · [Next: step 2](02-find-your-way-around.md)
+[Previous: Set up your PC](00-set-up-your-pc.md) · [Next: Find your way around](02-find-your-way-around.md)

@@ -78,4 +78,4 @@ Nothing gets through now unless a rule allows it, and every blocked attempt is w
 
 ---
 
-[Previous: step 5](05-one-password-three-doors.md) · [Phase 1 steps](README.md) · [Next: step 7](07-open-for-purpose.md)
+[Previous: One password, three doors](05-one-password-three-doors.md) · [Next: Open for purpose](07-open-for-purpose.md)

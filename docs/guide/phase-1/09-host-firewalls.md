@@ -133,4 +133,4 @@ Work from the middle out, and you find any firewall fault in three checks.
 
 ---
 
-[Previous: step 8](08-the-way-around.md) · [Phase 1 steps](README.md) · [Next: step 10](10-check-your-work.md)
+[Previous: The way around](08-the-way-around.md) · [Next: Check your work, and save it as code](10-check-your-work.md)

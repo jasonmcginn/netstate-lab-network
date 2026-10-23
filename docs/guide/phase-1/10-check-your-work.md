@@ -71,4 +71,4 @@ You've watched an open network, read passwords off the wire, reused one, locked 
 
 ---
 
-[Previous: step 9](09-host-firewalls.md) · [Phase 1 steps](README.md) · Next: Phase 2, the 2010 knock (coming)
+[Previous: Host firewalls](09-host-firewalls.md) · [Next phase: Phase 2: Legacy Port Knocking Test](../phase-2/README.md)

@@ -94,4 +94,4 @@ Real-world versions of this: a server with a second network card, a forgotten st
 
 ---
 
-[Previous: step 7](07-open-for-purpose.md) · [Phase 1 steps](README.md) · [Next: step 9](09-host-firewalls.md)
+[Previous: Open for purpose](07-open-for-purpose.md) · [Next: Host firewalls](09-host-firewalls.md)

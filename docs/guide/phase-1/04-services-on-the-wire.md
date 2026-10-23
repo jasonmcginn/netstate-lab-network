@@ -78,4 +78,4 @@ Next, step 5 shows why it matters that all three use the same password.
 
 ---
 
-[Previous: step 3](03-two-views.md) · [Phase 1 steps](README.md) · [Next: step 5](05-one-password-three-doors.md)
+[Previous: Watch the traffic: two views](03-two-views.md) · [Next: One password, three doors](05-one-password-three-doors.md)

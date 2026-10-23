@@ -65,4 +65,4 @@ The `.pcap` file in the `captures` folder also opens in Wireshark.
 
 ---
 
-[Previous: step 2](02-find-your-way-around.md) · [Phase 1 steps](README.md) · [Next: step 4](04-services-on-the-wire.md)
+[Previous: Find your way around](02-find-your-way-around.md) · [Next: Services on the wire](04-services-on-the-wire.md)

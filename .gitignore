@@ -4,3 +4,6 @@ captures/*
 # Local secrets and settings
 .env
 *.local.*
+
+# fwknop keys are generated at run time, never committed
+config/fw/access.conf

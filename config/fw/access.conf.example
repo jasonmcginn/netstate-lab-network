@@ -1,0 +1,8 @@
+# The NetState Lab Network: fwknop access file (EXAMPLE)
+# Make real keys with:  fwknop --key-gen
+# Put them in /etc/fwknop/access.conf on fw. Never commit real keys.
+SOURCE                 ANY
+KEY_BASE64             __RIJNDAEL_KEY_BASE64__
+HMAC_KEY_BASE64        __HMAC_KEY_BASE64__
+FW_ACCESS_TIMEOUT      30
+REQUIRE_SOURCE_ADDRESS Y

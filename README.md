@@ -2,7 +2,7 @@
 
 A firewall between a LAN and a DMZ, on one PC. Built to show what crosses the wire, and why. Part of [netstatedata.ca](https://www.netstatedata.ca).
 
-> **Status:** Phase 1 guide written, steps 0 to 10. Phase 2 next.
+> **Status:** all five phases written. Phase 1, 3, 4 and 5 complete; Phase 2 has steps 0 to 4, with its "break it" pages in progress.
 
 ```
    LAN 10.10.10.0/24                     DMZ 10.10.20.0/24

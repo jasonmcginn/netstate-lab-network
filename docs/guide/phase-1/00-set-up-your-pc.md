@@ -119,4 +119,4 @@ A worked example of tracking one of these down: [the frozen shell](https://www.n
 
 ---
 
-[Phase 1 steps](README.md) · [Next: step 1](01-start-the-lab.md)
+[Phase steps](README.md) · [Next: Prove the path](01-start-the-lab.md)

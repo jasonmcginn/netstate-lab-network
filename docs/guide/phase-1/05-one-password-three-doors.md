@@ -65,4 +65,4 @@ Look at the server's log again. Both lines say `Accepted password`. The only dif
 
 ---
 
-[Previous: step 4](04-services-on-the-wire.md) · [Phase 1 steps](README.md) · [Next: step 6](06-lock-it-down.md)
+[Previous: Services on the wire](04-services-on-the-wire.md) · [Next: Lock it down](06-lock-it-down.md)

@@ -1,0 +1,22 @@
+# The NetState Lab Network: Phase 2 answer key (fw)
+# fw's rules at the end of Phase 2, in the same format iptables-save prints.
+# SSH (and RDP) have no rule of their own any more: the knock watcher adds a
+# short-lived "knock door" rule for an address that knocks correctly.
+# Load it:  docker compose exec fw sh -c "iptables-restore < /lab/config/fw/phase2-rules.v4"
+*filter
+:INPUT ACCEPT [0:0]
+:FORWARD DROP [0:0]
+:OUTPUT ACCEPT [0:0]
+# 1. Log every new connection, allowed or not
+-A FORWARD -m conntrack --ctstate NEW -j NFLOG --nflog-prefix FW-NEW --nflog-group 1
+# 2. Stateful: replies and sessions already open (this is what keeps a session up after the door closes)
+-A FORWARD -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+# 3. Ping from the LAN to the DMZ, for troubleshooting
+-A FORWARD -i lan -o dmz -p icmp -m icmp --icmp-type 8 -j ACCEPT
+# 4. Web: anyone on the LAN
+-A FORWARD -i lan -o dmz -p tcp -m tcp --dport 80 -j ACCEPT
+# 5. The knock: log invalid-flag packets (FIN+PSH+URG) to the knock ports, for the watcher to read
+-A FORWARD -i lan -o dmz -p tcp -m tcp --tcp-flags FIN,SYN,RST,PSH,ACK,URG FIN,PSH,URG -m multiport --dports 4747,3043,9034 -j NFLOG --nflog-prefix FW-KNOCK --nflog-group 1
+# 6. Log what's about to be dropped
+-A FORWARD -j NFLOG --nflog-prefix FW-DROP --nflog-group 1
+COMMIT

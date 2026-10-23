@@ -28,6 +28,13 @@ echo "[server] ssh    :22  up (log: /var/log/auth.log)"
 /usr/sbin/inetd /etc/inetd.conf
 echo "[server] telnet :23  up"
 
+# RDP (xrdp): the port the knock hides in Phase 2, alongside SSH
+mkdir -p /run/xrdp; /usr/sbin/xrdp-sesman >/dev/null 2>&1; /usr/sbin/xrdp >/dev/null 2>&1
+echo "[server] rdp    :3389 up"
+
+# Fail2Ban is installed but off until Phase 2:  fail2ban-client start
+mkdir -p /run/fail2ban
+
 # Web, in the foreground so its requests show in the container log
 echo "[server] web    :80  starting"
 exec python3 /opt/web/app.py
