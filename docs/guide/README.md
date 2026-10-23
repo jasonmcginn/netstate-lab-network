@@ -5,7 +5,7 @@ Each phase is a set of steps, one page each. The same guide is on the site, with
 | Phase | Guide |
 |---|---|
 | [Phase 1: firewall and protocols on the wire](phase-1/README.md) | 11 steps |
-| [Phase 2: Legacy Port Knocking Test](phase-2/README.md) | 5 steps |
+| [Phase 2: Legacy Port Knocking Test](phase-2/README.md) | 9 steps |
 | [Phase 3: fix the leaks](phase-3/README.md) | 8 steps |
 | [Phase 4: modern remote access](phase-4/README.md) | 5 steps |
 | [Phase 5: traffic shaping](phase-5/README.md) | 4 steps |

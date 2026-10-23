@@ -65,4 +65,4 @@ To change a timer, edit `config\fw\knock.conf`, then restart the watcher: `docke
 
 ---
 
-[Previous: One packet by hand](03-one-packet-by-hand.md) · [Next phase: Phase 3: fix the leaks](../phase-3/README.md)
+[Previous: One packet by hand](03-one-packet-by-hand.md) · [Next: Break it: replay the knock](05-break-it-replay-the-knock.md)
