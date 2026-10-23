@@ -1,0 +1,6 @@
+# Live captures and logs from demos: copy evidence out deliberately, never commit by accident
+captures/*
+!captures/.gitkeep
+# Local secrets and settings
+.env
+*.local.*

@@ -1,0 +1,90 @@
+# The NetState Lab Network
+# fw routes between the LAN (two clients) and the DMZ (one server).
+# Run:  docker compose up -d --build
+name: netstate-lab
+
+networks:
+  # "routed" gateway mode (Docker 28+): no address translation, and Docker
+  # doesn't block packets routed between containers. Plain "internal" networks
+  # drop exactly the traffic a router container forwards (tested 2026-10-22).
+  # Docker's own gateway sits at .254 so fw can be .1.
+  lan:
+    driver_opts:
+      com.docker.network.bridge.gateway_mode_ipv4: routed
+    ipam:
+      config:
+        - subnet: 10.10.10.0/24
+          gateway: 10.10.10.254
+  dmz:
+    driver_opts:
+      com.docker.network.bridge.gateway_mode_ipv4: routed
+    ipam:
+      config:
+        - subnet: 10.10.20.0/24
+          gateway: 10.10.20.254
+
+services:
+  fw:
+    build:
+      context: .
+      dockerfile: images/fw/Dockerfile
+    image: netstate-lab/fw:dev
+    hostname: fw
+    init: true
+    # NET_ADMIN: fw manages its own routes and firewall rules (iptables).
+    cap_add: [NET_ADMIN]
+    sysctls:
+      net.ipv4.ip_forward: 1
+    volumes:
+      - ./captures:/captures
+      # Firewall rules as code: the answer keys live here (read-only)
+      - ./config/fw:/lab/config/fw:ro
+    networks:
+      lan: {ipv4_address: 10.10.10.1}
+      dmz: {ipv4_address: 10.10.20.1}
+
+  client-a:
+    build: ./images/client
+    image: netstate-lab/client:dev
+    hostname: client-a
+    init: true
+    # NET_ADMIN: sets its own route through fw at start-up, and later runs its
+    # own host firewall (Phase 1, act 4).
+    cap_add: [NET_ADMIN]
+    environment:
+      ROUTE_TO: 10.10.20.0/24
+      ROUTE_VIA: 10.10.10.1
+    volumes:
+      - ./tests:/lab/tests:ro
+    networks:
+      lan: {ipv4_address: 10.10.10.11}
+
+  client-b:
+    build: ./images/client
+    image: netstate-lab/client:dev
+    hostname: client-b
+    init: true
+    cap_add: [NET_ADMIN]
+    environment:
+      ROUTE_TO: 10.10.20.0/24
+      ROUTE_VIA: 10.10.10.1
+    volumes:
+      - ./tests:/lab/tests:ro
+    networks:
+      lan: {ipv4_address: 10.10.10.12}
+
+  server:
+    build:
+      context: .
+      dockerfile: images/server/Dockerfile
+    image: netstate-lab/server:dev
+    hostname: server
+    init: true
+    cap_add: [NET_ADMIN]
+    # Lab-only login (LAB_USER, LAB_PASS), shared by web, Telnet and SSH.
+    env_file: config/lab.env
+    environment:
+      ROUTE_TO: 10.10.10.0/24
+      ROUTE_VIA: 10.10.20.1
+    networks:
+      dmz: {ipv4_address: 10.10.20.10}

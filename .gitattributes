@@ -1,0 +1,8 @@
+# Everything in this lab runs inside Linux containers, so every text file
+# keeps Linux line endings (LF), even when cloned on Windows.
+# A Windows line ending breaks things quietly: a password in config/lab.env
+# gains a hidden character, and the firewall rules fail to load.
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.pcap binary

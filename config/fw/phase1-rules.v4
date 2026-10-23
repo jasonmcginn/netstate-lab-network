@@ -1,0 +1,21 @@
+# The NetState Lab Network: Phase 1 answer key (fw)
+# fw's rules at the end of Phase 1, in the same format iptables-save prints,
+# so your saved rules can be compared line by line.
+# Load it:  docker compose exec fw sh -c "iptables-restore < /lab/config/fw/phase1-rules.v4"
+*filter
+:INPUT ACCEPT [0:0]
+:FORWARD DROP [0:0]
+:OUTPUT ACCEPT [0:0]
+# 1. Log every new connection, allowed or not
+-A FORWARD -m conntrack --ctstate NEW -j NFLOG --nflog-prefix FW-NEW --nflog-group 1
+# 2. Stateful: let replies and existing conversations through
+-A FORWARD -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+# 3. Ping from the LAN to the DMZ (type 8 = echo request), for troubleshooting
+-A FORWARD -i lan -o dmz -p icmp -m icmp --icmp-type 8 -j ACCEPT
+# 4. Web: anyone on the LAN (the DMZ serves the public)
+-A FORWARD -i lan -o dmz -p tcp -m tcp --dport 80 -j ACCEPT
+# 5. SSH: client-a only (the authorized user)
+-A FORWARD -s 10.10.10.11/32 -i lan -o dmz -p tcp -m tcp --dport 22 -j ACCEPT
+# 6. Log what's about to be dropped (the DROP policy then drops it)
+-A FORWARD -j NFLOG --nflog-prefix FW-DROP --nflog-group 1
+COMMIT
